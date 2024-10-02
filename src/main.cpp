@@ -1,46 +1,27 @@
-#include <WiFi.h>
-#include <PubSubClient.h>
+#include <config.h>
 #include <Arduino.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_BMP085.h>
+#include <DHT.h>
+#include <SoftwareSerial.h>
 
-/*
-    Contains the following constants:
-    WIFI_SSID
-    WIFI_PASS
-    MQTT_SERV
-    MQTT_PORT
-*/
-#include "secrets.h"
-
-/*
-    Contains the following constants:
-    TERMISTOR_PIN
-    PHOTORESISTOR_PIN
-    ANALOG_READ_RESOLUTION
-*/
-#include "config.h"
-
-WiFiClient espClient;
-PubSubClient client(espClient);
-
-void callback(char* topic, byte* payload, unsigned int length){
-    for(int i = 0; i < length; i++){
-        // TODO
-    }
-}
+Adafruit_SSD1306 display(128, 64, &Wire, -1);
+Adafruit_BMP085 bmp;
+DHT dht;
+SoftwareSerial HC12(HC_12_RX_PIN, HC_12_TX_PIN);
 
 void setup(){
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
-
-    while(WiFi.status() != WL_CONNECTED){
-        delay(500);
-    }
-    client.setServer(MQTT_SERV, MQTT_PORT);
-    client.setCallback(callback);
+    Serial.begin(9600);
+    HC12.begin(9600);
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    display.display();
 }
 
 void loop(){
-    if(!client.connected()){
-
+    if(Serial.available()){
+        HC12.write(Serial.read());
     }
-    client.loop();
+    if(HC12.available()){
+        Serial.write(HC12.read());
+    }
 }
