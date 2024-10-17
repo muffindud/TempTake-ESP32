@@ -22,6 +22,9 @@ void setup(){
 
     delay(500);
 
+    pinMode(RAIN_SENSOR_PIN, INPUT);
+    // pinMode(HC_12_SET_PIN, OUTPUT);
+    // digitalWrite(HC_12_SET_PIN, LOW);
     bmp.begin();
     dht.setup(DHT_22_PIN);
 }
@@ -48,5 +51,7 @@ void loop(){
     display.println();
     display.println("P: " + String(bmp.readPressure() / MMHG_TO_PA) + " mmHg");
     display.println("T: " + String(bmp.readTemperature()) + " C");
+    display.println();
+    display.println("R: " + String(analogRead(RAIN_SENSOR_PIN)));
     display.display();
 }
